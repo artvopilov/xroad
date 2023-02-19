@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.8"
 fastapi = "^0.91.0"
 uvicorn = {extras = ["standard"], version = "^0.20.0"}
+mongoengine = "^0.26.0"
+pydantic = "^1.10.5"
 
 
 [build-system]
