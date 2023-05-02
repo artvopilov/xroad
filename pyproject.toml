@@ -10,6 +10,7 @@ python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.95.1"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+mongoengine = "^0.27.0"
 
 
 [build-system]
