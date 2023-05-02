@@ -14,7 +14,7 @@ router = APIRouter(prefix='/user')
 
 @router.post('/signup')
 async def signup(user_model: UserModel):
-    user_schema = UserSchema.objects(username=user_model.username)
+    user_schema = UserSchema.objects(username=str(user_model.username))
     if user_schema:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -27,7 +27,7 @@ async def signup(user_model: UserModel):
 
 @router.post('/signin')
 async def signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user_schema = UserSchema.objects(username=form_data.username)
+    user_schema = UserSchema.objects(username=form_data.username).first()
     if not user_schema or not AuthUtils.verify_password(form_data.password, user_schema.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

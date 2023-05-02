@@ -1,9 +1,9 @@
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 
 
 class User(BaseModel):
-    username = str
-    password = str
-    name = str
-    age = int
-    type = str
+    username: str
+    password: str
+    name: str
+    age: int
+    type: str
