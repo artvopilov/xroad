@@ -40,7 +40,7 @@ class RouteDeps:
             expire = payload.get('expire')
             if username is None:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Missing username')
-            if datetime.fromtimestamp(expire, tz=timezone.utc) < datetime.now():
+            if datetime.fromtimestamp(expire, tz=timezone.utc) < datetime.now(tz=timezone.utc):
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token expired')
         except JWTError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
