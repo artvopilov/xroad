@@ -21,7 +21,7 @@ class AuthUtils:
     @classmethod
     def create_access_token(cls, username: str):
         expire = datetime.now(tz=timezone.utc) + timedelta(minutes=cls._JWT_MINUTES)
-        payload = {'username': username, 'expire': expire}
+        payload = {'username': username, 'expire': expire.timestamp()}
         return jwt.encode(payload, cls._JWT_SECRET_KEY, algorithm=cls._JWT_ALGORITHM)
 
     @classmethod
