@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from mongoengine import connect
 
-from src.routes import users_router, businesses_router
+from src.routes import user_router, business_router
 
 connect('test', host='127.0.0.1', port=27017)
 

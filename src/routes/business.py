@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 
 from src.auth_utils import AuthUtils
 from src.models import Business as BusinessModel
@@ -10,8 +10,6 @@ from src.route_deps import RouteDeps
 from src.schemas import Business as BusinessSchema
 
 router = APIRouter(prefix='/business')
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='business/signin')
 
 
 @router.post('/signup')
@@ -22,8 +20,8 @@ async def signup(business_model: BusinessModel):
                             detail='Business with this username already exists')
     business_info = business_model.dict()
     business_info['password'] = AuthUtils.compute_password_hash(business_info['password'])
-    business_schema = BusinessSchema(**business_info).save()
-    return {'username': business_schema.username}
+    new_business_schema = BusinessSchema(**business_info).save()
+    return {'username': new_business_schema.username}
 
 
 @router.post('/signin')

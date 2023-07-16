@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 
 from src.auth_utils import AuthUtils
 from src.models import User as UserModel
@@ -10,8 +10,6 @@ from src.route_deps import RouteDeps
 from src.schemas import User as UserSchema
 
 router = APIRouter(prefix='/user')
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='user/signin')
 
 
 @router.post('/signup')
