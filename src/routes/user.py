@@ -33,5 +33,6 @@ async def signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 
 @router.get('/me', response_model=UserModel)
-async def me(current_user: Annotated[UserModel, Depends(RouteDeps.get_current_user)]):
-    return current_user
+async def me(user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]):
+    user_info = user_schema.to_mongo()
+    return UserModel(**user_info)

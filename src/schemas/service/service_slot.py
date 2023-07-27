@@ -1,10 +1,8 @@
-from mongoengine import Document, IntField, ReferenceField, DateField, FloatField
-
-from src.schemas.service.service import Service
+from mongoengine import Document, IntField, DateField, FloatField, ObjectIdField
 
 
 class ServiceSlot(Document):
-    service = ReferenceField(Service, required=True)
+    service_id = ObjectIdField(required=True)
     start_date_time = DateField(required=True)
     end_date_time = DateField(required=True)
     price = FloatField()

@@ -14,7 +14,7 @@ router = APIRouter(prefix='/business')
 
 @router.post('/signup')
 async def signup(business_model: BusinessModel):
-    business_schema = BusinessSchema.objects(username=str(business_model.username))
+    business_schema = BusinessSchema.objects(username=str(business_model.username)).first()
     if business_schema:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Business with this username already exists')
@@ -34,5 +34,6 @@ async def signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 
 @router.get('/me', response_model=BusinessModel)
-async def me(current_business: Annotated[BusinessModel, Depends(RouteDeps.get_current_business)]):
-    return current_business
+async def me(business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]):
+    business_info = business_schema.to_mongo()
+    return BusinessModel(**business_info)

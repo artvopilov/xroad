@@ -1,11 +1,8 @@
-from mongoengine import Document, ReferenceField, BooleanField
-
-from src.schemas.service.service_slot import ServiceSlot
-from src.schemas.user import User
+from mongoengine import Document, BooleanField, ObjectIdField
 
 
 class ServiceBooking(Document):
-    slot = ReferenceField(ServiceSlot, required=True)
-    user = ReferenceField(User, required=True)
+    slot_id = ObjectIdField(required=True)
+    user_id = ObjectIdField(required=True)
     is_accepted = BooleanField(default=False)
     is_paid = BooleanField(default=False)

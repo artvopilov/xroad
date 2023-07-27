@@ -1,10 +1,8 @@
-from mongoengine import Document, IntField, StringField, BooleanField, ReferenceField
-
-from src.schemas.business import Business
+from mongoengine import Document, IntField, StringField, BooleanField, ObjectIdField
 
 
 class Service(Document):
-    business = ReferenceField(Business, required=True)
+    business_id = ObjectIdField(required=True)
     name = StringField(required=True)
     description = StringField(required=True)
     x = IntField(required=True)
