@@ -88,13 +88,13 @@ async def create_service_slot_booking(
 
 
 @router.get('/slot/{slot_id}/booking', response_model=list[ServiceSlotBookingModel])
-async def get_service_slot_booking(slot_id: str, skip: int = None, limit: int = None):
+async def get_service_slot_bookings(slot_id: str, skip: int = None, limit: int = None):
     service_slot_booking_schemas = ServiceSlotBookingSchema.objects(slot_id=slot_id)[skip: limit]
     return list(service_slot_booking_schemas.as_pymongo())
 
 
 @router.get('/slot/booking/{booking_id}', response_model=ServiceSlotBookingModel)
-async def get_service_slot_by_id(booking_id: str):
+async def get_service_slot_booking_by_id(booking_id: str):
     service_slot_booking_schema = ServiceSlotBookingSchema.objects(id=booking_id).first()
     if service_slot_booking_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No service slot booking with this id')
