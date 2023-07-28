@@ -13,4 +13,4 @@ class User(Document):
     city_id = IntField(required=True)
     phone = StringField(required=True)
     email = StringField()
-    is_pro = BooleanField(required=True)
+    is_pro = BooleanField(required=True, default=False)

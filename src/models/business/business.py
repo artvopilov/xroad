@@ -1,17 +1,21 @@
+from typing import Optional, List
+
 from pydantic import BaseModel, ConfigDict
 from pydantic.fields import Field
 
 from src.models.pydantic_object_id import PydanticObjectId
 
 
-class Service(BaseModel):
+class Business(BaseModel):
     _config = ConfigDict(allow_population_by_field_name=True)
 
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
-    business_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
+    username: str
     name: str
-    description: str
-    x: int
-    y: int
-    is_private: bool = False
-    is_active: bool = True
+    description: Optional[str]
+    logo_url: Optional[str]
+    phone: str
+    email: Optional[str]
+    address: str
+    document_urls: Optional[List[str]]
+    certificate_urls: Optional[List[str]]

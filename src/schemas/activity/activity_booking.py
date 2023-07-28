@@ -1,10 +1,7 @@
-from mongoengine import Document, ReferenceField, BooleanField
-
-from src.schemas.activity.activity_slot import ActivitySlot
-from src.schemas.user import User
+from mongoengine import Document, BooleanField, ObjectIdField
 
 
 class ActivityBooking(Document):
-    slot = ReferenceField(ActivitySlot, required=True)
-    user = ReferenceField(User, required=True)
+    slot_id = ObjectIdField(required=True)
+    user_id = ObjectIdField(required=True)
     is_accepted = BooleanField(default=False)

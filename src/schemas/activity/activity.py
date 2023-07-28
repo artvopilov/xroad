@@ -4,7 +4,7 @@ from src.schemas.user import User
 
 
 class Activity(Document):
-    user = ReferenceField(User, required=True)
+    user_id = ReferenceField(User, required=True)
     name = StringField(required=True)
     description = StringField(required=True)
     x = IntField(required=True)
