@@ -13,7 +13,7 @@ router = APIRouter(prefix='/user')
 
 
 @router.post('/signup', response_model=UserModel)
-async def signup(user_create_model: UserCreateModel):
+async def user_signup(user_create_model: UserCreateModel):
     user_schema = UserSchema.objects(username=str(user_create_model.username))
     if user_schema:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='User with this username already exists')
@@ -24,7 +24,7 @@ async def signup(user_create_model: UserCreateModel):
 
 
 @router.post('/signin')
-async def signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def user_signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     user_schema = UserSchema.objects(username=form_data.username).first()
     if not user_schema or not AuthUtils.verify_password(form_data.password, user_schema.password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Incorrect username or password')
@@ -33,5 +33,5 @@ async def signin(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
 
 @router.get('', response_model=UserModel)
-async def me(user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]):
+async def user(user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]):
     return user_schema.to_mongo()
