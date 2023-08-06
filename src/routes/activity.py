@@ -94,9 +94,9 @@ async def create_slot(
 async def get_slots(
     activity_id: str,
     date_min: date,
-    date_max: Optional[date],
-    skip: Optional[int],
-    limit: Optional[int]
+    date_max: date,
+    skip: int = None,
+    limit: int = None
 ):
     slot_schemas = SlotSchema.objects(
         activity_id=activity_id,
@@ -143,7 +143,7 @@ async def create_booking(
 
 
 @router.get('/slot/{slot_id}/booking', response_model=list[BookingModel])
-async def get_bookings(slot_id: str, skip: Optional[int], limit: Optional[int]):
+async def get_bookings(slot_id: str, skip: int = None, limit: int = None):
     booking_schemas = BookingSchema.objects(slot_id=slot_id)[skip: limit]
     return list(booking_schemas.as_pymongo())
 
@@ -159,17 +159,11 @@ async def get_booking(booking_id: str):
 @router.delete('/slot/booking/{booking_id}', status_code=204)
 async def delete_booking(
     booking_id: str,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     booking_schema = BookingSchema.objects(id=booking_id).first()
     if booking_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No booking with this id')
-    slot_schema = SlotSchema.objects(id=booking_schema.slot_id).first()
-    if slot_schema is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No slot with this id')
-    activity_schema = ActivitySchema.objects(id=slot_schema.activity_id).first()
-    if activity_schema is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.business_id != business_schema.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
+    if booking_schema.user_id != user_schema.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of booking')
     booking_schema.delete()
