@@ -4,7 +4,7 @@ from pydantic.fields import Field
 from src.models.pydantic_object_id import PydanticObjectId
 
 
-class ServiceSlotBooking(BaseModel):
+class Booking(BaseModel):
     _config = ConfigDict(allow_population_by_field_name=True)
 
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')

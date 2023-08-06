@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class ServiceSlotCreate(BaseModel):
+class SlotCreate(BaseModel):
     start_date_time: datetime
     end_date_time: datetime
     price: Optional[int]

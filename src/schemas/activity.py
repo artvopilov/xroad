@@ -1,7 +1,7 @@
 from mongoengine import Document, IntField, StringField, BooleanField, ObjectIdField
 
 
-class Service(Document):
+class Activity(Document):
     business_id = ObjectIdField(required=True)
     name = StringField(required=True)
     description = StringField(required=True)

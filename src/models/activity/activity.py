@@ -1,18 +1,17 @@
-from typing import Optional
-
 from pydantic import BaseModel, ConfigDict
 from pydantic.fields import Field
-from datetime import datetime
 
 from src.models.pydantic_object_id import PydanticObjectId
 
 
-class ServiceSlot(BaseModel):
+class Activity(BaseModel):
     _config = ConfigDict(allow_population_by_field_name=True)
 
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
-    service_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
-    start_date_time: datetime
-    end_date_time: datetime
-    price: Optional[int]
-    max_users: Optional[int]
+    business_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
+    name: str
+    description: str
+    x: int
+    y: int
+    is_private: bool = False
+    is_active: bool = True

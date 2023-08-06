@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
-class ServiceCreate(BaseModel):
+class ActivityCreate(BaseModel):
     name: str
     description: str
     x: int
