@@ -8,7 +8,7 @@ class Activity(BaseModel):
     _config = ConfigDict(allow_population_by_field_name=True)
 
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
-    business_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
+    user_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
     name: str
     description: str
     x: int

@@ -11,13 +11,6 @@ class User(BaseModel):
 
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     username: str
-    first_name: str
-    middle_name: Optional[str]
-    last_name: Optional[str]
-    image_url: Optional[str]
+    user_type: str
     phone: str
     email: Optional[str]
-    age: int
-    gender_id: int
-    city_id: int
-    is_pro: bool = False

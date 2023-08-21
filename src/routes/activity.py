@@ -10,10 +10,7 @@ from src.models import (
     ActivityUpdate as ActivityUpdateModel,
     Slot as SlotModel, SlotCreate as SlotCreateModel)
 from src.route_deps import RouteDeps
-from src.schemas import (
-    Business as BusinessSchema,
-    Activity as ActivitySchema,
-    Slot as SlotSchema)
+from src.schemas import Activity as ActivitySchema, Slot as SlotSchema, User as UserSchema
 
 router = APIRouter(prefix='/activity', tags=['activity'])
 
@@ -21,10 +18,10 @@ router = APIRouter(prefix='/activity', tags=['activity'])
 @router.post('', response_model=ActivityModel)
 async def create_activity(
     activity_create_model: ActivityCreateModel,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_create_info = activity_create_model.dict()
-    activity_schema = ActivitySchema(**activity_create_info, business_id=business_schema.id).save()
+    activity_schema = ActivitySchema(**activity_create_info, user_id=user_schema.id).save()
     return activity_schema.to_mongo()
 
 
@@ -45,12 +42,12 @@ async def get_activity(activity_id: str):
 @router.delete('/{activity_id}', status_code=204)
 async def delete_activity(
     activity_id: str,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.business_id != business_schema.id:
+    if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     activity_schema.delete()
 
@@ -59,12 +56,12 @@ async def delete_activity(
 async def update_activity(
     activity_id: str,
     activity_update_model: ActivityUpdateModel,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.business_id != business_schema.id:
+    if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     activity_update_info = activity_update_model.dict(exclude_unset=True)
     activity_schema.update(**activity_update_info)
@@ -75,12 +72,12 @@ async def update_activity(
 async def create_slot(
     activity_id: str,
     slot_create_model: SlotCreateModel,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.business_id != business_schema.id:
+    if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     slot_create_info = slot_create_model.dict()
     slot_schema = SlotSchema(**slot_create_info, activity_id=activity_schema.id).save()

@@ -9,7 +9,7 @@ from src.models import UserCreate as UserCreateModel, User as UserModel
 from src.route_deps import RouteDeps
 from src.schemas import User as UserSchema
 
-router = APIRouter(prefix='/user')
+router = APIRouter(prefix='/user', tags=['user'])
 
 
 @router.post('/signup', response_model=UserModel)

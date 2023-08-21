@@ -7,10 +7,9 @@ from src.models import Slot as SlotModel, Booking as BookingModel
 from src.route_deps import RouteDeps
 from src.schemas import (
     User as UserSchema,
-    Business as BusinessSchema,
+    Booking as BookingSchema,
     Activity as ActivitySchema,
-    Slot as SlotSchema,
-    Booking as BookingSchema)
+    Slot as SlotSchema)
 
 router = APIRouter(prefix='/slot', tags=['slot'])
 
@@ -26,7 +25,7 @@ async def get_slot(slot_id: str):
 @router.delete('/{slot_id}', status_code=204)
 async def delete_slot(
     slot_id: str,
-    business_schema: Annotated[BusinessSchema, Depends(RouteDeps.get_current_business)]
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     slot_schema = SlotSchema.objects(id=slot_id).first()
     if slot_schema is None:
@@ -34,7 +33,7 @@ async def delete_slot(
     activity_schema = ActivitySchema.objects(id=slot_schema.activity_id).first()
     if activity_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.business_id != business_schema.id:
+    if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     slot_schema.delete()
 

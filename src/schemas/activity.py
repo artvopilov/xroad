@@ -2,7 +2,7 @@ from mongoengine import Document, IntField, StringField, BooleanField, ObjectIdF
 
 
 class Activity(Document):
-    business_id = ObjectIdField(required=True)
+    user_id = ObjectIdField(required=True)
     name = StringField(required=True)
     description = StringField(required=True)
     x = IntField(required=True)
