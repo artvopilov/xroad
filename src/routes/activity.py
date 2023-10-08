@@ -26,7 +26,7 @@ async def create_activity(
     return activity_schema.to_mongo()
 
 
-@router.get('/', response_model=list[ActivityModel])
+@router.get('', response_model=list[ActivityModel])
 async def get_activities(
     min_x: int,
     min_y: int,
@@ -38,7 +38,7 @@ async def get_activities(
 ):
     activity_schemas = ActivitySchema.objects(x__gte=min_x, y__gte=min_y, x__lte=max_x, y__lte=max_y)
     if user_id is not None:
-        activity_schemas = activity_schemas.objects(user_id=user_id)
+        activity_schemas = activity_schemas(user_id=user_id)
     activity_schemas = activity_schemas[skip: limit]
     return list(activity_schemas.as_pymongo())
 
@@ -78,15 +78,3 @@ async def update_activity(
     activity_update_info = activity_update_model.dict(exclude_unset=True)
     activity_schema.update(**activity_update_info)
     return activity_schema.to_mongo()
-
-
-@router.get('/my', response_model=list[ActivityModel])
-async def get_my_activities(
-    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)],
-    skip: int = 0,
-    limit: int = 10
-):
-    if user_schema.user_type != 'business' and not user_schema.is_pro:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not allowed')
-    activity_schemas = ActivitySchema.objects(user_id=user_schema.id)[skip: limit]
-    return list(activity_schemas.as_pymongo())

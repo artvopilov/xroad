@@ -15,14 +15,14 @@ class User(Document):
     # person
     middle_name = StringField()
     last_name = StringField()
-    age = IntField(required=True)
-    gender = StringField(required=True)
-    city = StringField(required=True)
-    is_pro = BooleanField(default=False)
+    age = IntField()
+    gender = StringField()
+    city = StringField()
+    is_pro = BooleanField()
 
     # business
     description = StringField()
-    address = StringField(required=True)
-    document_urls = ListField(StringField())
-    certificate_urls = ListField(StringField())
+    address = StringField()
+    document_urls = ListField(StringField(), default=None)
+    certificate_urls = ListField(StringField(), default=None)
 

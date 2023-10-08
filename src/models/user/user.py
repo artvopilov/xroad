@@ -1,4 +1,4 @@
-from typing import Optional, Literal, List
+from typing import Optional, List, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -11,24 +11,24 @@ class User(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     username: str
     password: str
-    user_type = Literal['person', 'business']
+    user_type: Literal['person', 'business']
 
     # common
-    name = str
-    phone = str
-    email = Optional[str]
-    image_url = Optional[str]
+    name: str
+    phone: str
+    email: Optional[str]
+    image_url: Optional[str]
 
     # person
     middle_name: Optional[str]
     last_name: Optional[str]
-    age: int
-    gender: str
-    city: str
-    is_pro: bool
+    age: Optional[int]
+    gender: Optional[str]
+    city: Optional[str]
+    is_pro: Optional[bool]
 
     # business
     description: Optional[str]
-    address: str
+    address: Optional[str]
     document_urls: Optional[List[str]]
     certificate_urls: Optional[List[str]]

@@ -5,10 +5,10 @@ from pydantic import BaseModel
 
 class UserUpdate(BaseModel):
     # common
-    name = Optional[str]
-    phone = Optional[str]
-    email = Optional[str]
-    image_url = Optional[str]
+    name: Optional[str]
+    phone: Optional[str]
+    email: Optional[str]
+    image_url: Optional[str]
 
     # person
     middle_name: Optional[str]
