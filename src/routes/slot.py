@@ -1,17 +1,46 @@
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
 
-from src.models import Slot as SlotModel, Booking as BookingModel
+from src.models import Slot as SlotModel, SlotCreate as SlotCreateModel, SlotUpdate as SlotUpdateModel
 from src.route_deps import RouteDeps
-from src.schemas import (
-    User as UserSchema,
-    Booking as BookingSchema,
-    Activity as ActivitySchema,
-    Slot as SlotSchema)
+from src.schemas import User as UserSchema, Activity as ActivitySchema, Slot as SlotSchema
 
-router = APIRouter(prefix='/slot', tags=['slot'])
+router = APIRouter(prefix='/slots', tags=['slots'])
+
+
+@router.post('/', response_model=SlotModel)
+async def create_slot(
+    slot_create_model: SlotCreateModel,
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
+):
+    slot_create_info = slot_create_model.dict()
+    activity_id = slot_create_info.pop('activity_id')
+    activity_schema = ActivitySchema.objects(id=activity_id).first()
+    if activity_schema is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
+    if activity_schema.user_id != user_schema.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
+    slot_schema = SlotSchema(**slot_create_info, activity_id=activity_schema.id).save()
+    return slot_schema.to_mongo()
+
+
+@router.get('/', response_model=list[SlotModel])
+async def get_slots(
+    activity_id: str,
+    date_min: date,
+    date_max: date,
+    skip: int = None,
+    limit: int = None
+):
+    slot_schemas = SlotSchema.objects(
+        activity_id=activity_id,
+        start_date_time__gte=date_min,
+        start_date_time__lte=date_max
+    )[skip: limit]
+    return list(slot_schemas.as_pymongo())
 
 
 @router.get('/{slot_id}', response_model=SlotModel)
@@ -38,19 +67,20 @@ async def delete_slot(
     slot_schema.delete()
 
 
-@router.post('/{slot_id}/booking', response_model=BookingModel)
-async def create_booking(
+@router.patch('/{slot_id}', response_model=SlotModel)
+async def update_slot(
     slot_id: str,
+    slot_update_model: SlotUpdateModel,
     user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     slot_schema = SlotSchema.objects(id=slot_id).first()
     if slot_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No slot with this id')
-    slot_schema = BookingSchema(slot_id=slot_schema.id, user_id=user_schema.id).save()
+    activity_schema = ActivitySchema.objects(id=slot_schema.activity_id).first()
+    if activity_schema is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
+    if activity_schema.user_id != user_schema.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
+    slot_update_info = slot_update_model.dict(exclude_unset=True)
+    slot_schema.update(**slot_update_info)
     return slot_schema.to_mongo()
-
-
-@router.get('/{slot_id}/booking', response_model=list[BookingModel])
-async def get_bookings(slot_id: str, skip: int = None, limit: int = None):
-    booking_schemas = BookingSchema.objects(slot_id=slot_id)[skip: limit]
-    return list(booking_schemas.as_pymongo())

@@ -1,8 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.fields import Field
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.pydantic_object_id import PydanticObjectId
 

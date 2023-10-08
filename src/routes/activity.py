@@ -1,4 +1,3 @@
-from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter
@@ -7,12 +6,12 @@ from fastapi import Depends, HTTPException, status
 from src.models import (
     Activity as ActivityModel,
     ActivityCreate as ActivityCreateModel,
-    ActivityUpdate as ActivityUpdateModel,
-    Slot as SlotModel, SlotCreate as SlotCreateModel)
+    ActivityUpdate as ActivityUpdateModel
+)
 from src.route_deps import RouteDeps
-from src.schemas import Activity as ActivitySchema, Slot as SlotSchema, User as UserSchema
+from src.schemas import Activity as ActivitySchema, User as UserSchema
 
-router = APIRouter(prefix='/activity', tags=['activity'])
+router = APIRouter(prefix='/activities', tags=['activities'])
 
 
 @router.post('', response_model=ActivityModel)
@@ -20,14 +19,27 @@ async def create_activity(
     activity_create_model: ActivityCreateModel,
     user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
+    if user_schema.user_type != 'business' and not user_schema.is_pro:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not allowed')
     activity_create_info = activity_create_model.dict()
     activity_schema = ActivitySchema(**activity_create_info, user_id=user_schema.id).save()
     return activity_schema.to_mongo()
 
 
-@router.get('', response_model=list[ActivityModel])
-async def get_activities(skip: int = None, limit: int = None):
-    activity_schemas = ActivitySchema.objects[skip: limit]
+@router.get('/', response_model=list[ActivityModel])
+async def get_activities(
+    min_x: int,
+    min_y: int,
+    max_x: int,
+    max_y: int,
+    user_id: str = None,
+    skip: int = 0,
+    limit: int = 10
+):
+    activity_schemas = ActivitySchema.objects(x__gte=min_x, y__gte=min_y, x__lte=max_x, y__lte=max_y)
+    if user_id is not None:
+        activity_schemas = activity_schemas.objects(user_id=user_id)
+    activity_schemas = activity_schemas[skip: limit]
     return list(activity_schemas.as_pymongo())
 
 
@@ -68,33 +80,13 @@ async def update_activity(
     return activity_schema.to_mongo()
 
 
-@router.post('/{activity_id}/slot', response_model=SlotModel)
-async def create_slot(
-    activity_id: str,
-    slot_create_model: SlotCreateModel,
-    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
+@router.get('/my', response_model=list[ActivityModel])
+async def get_my_activities(
+    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)],
+    skip: int = 0,
+    limit: int = 10
 ):
-    activity_schema = ActivitySchema.objects(id=activity_id).first()
-    if activity_schema is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No activity with this id')
-    if activity_schema.user_id != user_schema.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
-    slot_create_info = slot_create_model.dict()
-    slot_schema = SlotSchema(**slot_create_info, activity_id=activity_schema.id).save()
-    return slot_schema.to_mongo()
-
-
-@router.get('/{activity_id}/slot', response_model=list[SlotModel])
-async def get_slots(
-    activity_id: str,
-    date_min: date,
-    date_max: date,
-    skip: int = None,
-    limit: int = None
-):
-    slot_schemas = SlotSchema.objects(
-        activity_id=activity_id,
-        start_date_time__gte=date_min,
-        start_date_time__lte=date_max
-    )[skip: limit]
-    return list(slot_schemas.as_pymongo())
+    if user_schema.user_type != 'business' and not user_schema.is_pro:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not allowed')
+    activity_schemas = ActivitySchema.objects(user_id=user_schema.id)[skip: limit]
+    return list(activity_schemas.as_pymongo())

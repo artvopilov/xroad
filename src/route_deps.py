@@ -17,7 +17,7 @@ class RouteDeps:
         username = cls._get_current_username(access_token)
         user_schema = UserSchema.objects(username=username).first()
         if user_schema is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Incorrect username')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='No user associated with token')
         return user_schema
 
     @classmethod
@@ -27,9 +27,9 @@ class RouteDeps:
             username = payload.get('username')
             expire = payload.get('expire')
             if username is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Missing username')
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid token')
             if datetime.fromtimestamp(expire, tz=timezone.utc) < datetime.now(tz=timezone.utc):
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token expired')
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Expired token')
         except JWTError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate credentials')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token decoding error')
         return username

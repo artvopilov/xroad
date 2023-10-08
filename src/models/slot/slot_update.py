@@ -4,9 +4,9 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class SlotCreate(BaseModel):
+class SlotUpdate(BaseModel):
     activity_id: str
-    start_date_time: datetime
-    end_date_time: datetime
+    start_date_time: Optional[datetime]
+    end_date_time: Optional[datetime]
     price: Optional[int]
     max_users: Optional[int]

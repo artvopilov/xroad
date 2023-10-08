@@ -1,5 +1,6 @@
-from pydantic import BaseModel, ConfigDict
-from pydantic.fields import Field
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.pydantic_object_id import PydanticObjectId
 
@@ -10,8 +11,8 @@ class Activity(BaseModel):
     id: PydanticObjectId = Field(default_factory=PydanticObjectId, alias='_id')
     user_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
     name: str
-    description: str
+    description: Optional[str]
     x: int
     y: int
-    is_private: bool = False
-    is_active: bool = True
+    is_private: bool
+    is_active: bool
