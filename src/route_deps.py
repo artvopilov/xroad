@@ -10,7 +10,7 @@ from src.schemas import User as UserSchema
 
 
 class RouteDeps:
-    OAUTH2_SCHEME_USER = OAuth2PasswordBearer(tokenUrl='user/signin')
+    OAUTH2_SCHEME_USER = OAuth2PasswordBearer(tokenUrl='users/signin')
 
     @classmethod
     async def get_current_user(cls, access_token: Annotated[str, Depends(OAUTH2_SCHEME_USER)]) -> UserSchema:
