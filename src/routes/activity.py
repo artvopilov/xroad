@@ -76,5 +76,5 @@ async def update_activity(
     if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     activity_update_info = activity_update_model.dict(exclude_unset=True)
-    activity_schema.update(**activity_update_info)
+    activity_schema.modify(**activity_update_info)
     return activity_schema.to_mongo()

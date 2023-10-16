@@ -82,5 +82,5 @@ async def update_slot(
     if activity_schema.user_id != user_schema.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not owner of activity')
     slot_update_info = slot_update_model.dict(exclude_unset=True)
-    slot_schema.update(**slot_update_info)
+    slot_schema.modify(**slot_update_info)
     return slot_schema.to_mongo()
