@@ -48,5 +48,5 @@ async def update(
     user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     user_update_info = user_update_model.dict(exclude_unset=True)
-    user_schema.update(**user_update_info)
+    user_schema.modify(**user_update_info)
     return user_schema.to_mongo()

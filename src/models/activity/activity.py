@@ -12,7 +12,7 @@ class Activity(BaseModel):
     user_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
     name: str
     description: Optional[str]
-    x: int
-    y: int
+    x: float
+    y: float
     is_private: bool
     is_active: bool

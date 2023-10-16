@@ -1,5 +1,4 @@
-from pydantic import BaseModel, ConfigDict
-from pydantic.fields import Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.pydantic_object_id import PydanticObjectId
 

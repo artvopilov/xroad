@@ -11,7 +11,7 @@ from src.schemas import User as UserSchema, Activity as ActivitySchema, Slot as 
 router = APIRouter(prefix='/slots', tags=['slots'])
 
 
-@router.post('/', response_model=SlotModel)
+@router.post('', response_model=SlotModel)
 async def create_slot(
     slot_create_model: SlotCreateModel,
     user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
@@ -27,7 +27,7 @@ async def create_slot(
     return slot_schema.to_mongo()
 
 
-@router.get('/', response_model=list[SlotModel])
+@router.get('', response_model=list[SlotModel])
 async def get_slots(
     activity_id: str,
     date_min: date,

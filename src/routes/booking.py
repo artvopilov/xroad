@@ -3,19 +3,19 @@ from typing import Annotated
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
 
-from src.models import Booking as BookingModel
+from src.models import Booking as BookingModel, BookingCreate as BookingCreateModel
 from src.route_deps import RouteDeps
 from src.schemas import User as UserSchema, Slot as SlotSchema, Booking as BookingSchema
 
 router = APIRouter(prefix='/bookings', tags=['bookings'])
 
 
-@router.post('/{slot_id}/booking', response_model=BookingModel)
+@router.post('', response_model=BookingModel)
 async def create_booking(
-    slot_id: str,
+    booking_create_model: BookingCreateModel,
     user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
-    slot_schema = SlotSchema.objects(id=slot_id).first()
+    slot_schema = SlotSchema.objects(id=booking_create_model.slot_id).first()
     if slot_schema is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='No slot with this id')
     if user_schema.user_type == 'business':
@@ -28,9 +28,9 @@ async def create_booking(
 async def get_bookings(slot_id: str = None, user_id: str = None, skip: int = 0, limit: int = 10):
     booking_schemas = BookingSchema.objects()
     if slot_id is not None:
-        booking_schemas = booking_schemas.objects(slot_id=slot_id)
+        booking_schemas = booking_schemas(slot_id=slot_id)
     if user_id is not None:
-        booking_schemas = booking_schemas.objects(user_id=user_id)
+        booking_schemas = booking_schemas(user_id=user_id)
     booking_schemas = booking_schemas[skip: limit]
     return list(booking_schemas.as_pymongo())
 
