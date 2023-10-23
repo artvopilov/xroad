@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, IntField, BooleanField, ListField
+from mongoengine import Document, StringField, IntField, BooleanField, ListField, EmailField
 
 
 class User(Document):
@@ -16,7 +16,7 @@ class User(Document):
     middle_name = StringField()
     last_name = StringField()
     age = IntField()
-    gender = StringField()
+    gender = StringField(choices=['male', 'female'])
     city = StringField()
     is_pro = BooleanField()
 
@@ -25,4 +25,3 @@ class User(Document):
     address = StringField()
     document_urls = ListField(StringField(), default=None)
     certificate_urls = ListField(StringField(), default=None)
-
