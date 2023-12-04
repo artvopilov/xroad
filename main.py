@@ -3,7 +3,7 @@ from mongoengine import connect
 
 from src.routes import user_router, activity_router, slot_router, booking_router
 
-connect('test', host='127.0.0.1', port=27017)
+connect('test', host='db', port=27017)
 
 app = FastAPI()
 
