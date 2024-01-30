@@ -19,4 +19,5 @@ services:
     restart: unless-stopped
     pull_policy: always
     volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./data:/data/db

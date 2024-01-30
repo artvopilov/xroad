@@ -1,4 +1,4 @@
-from .activity import router as activity_router
-from .booking import router as booking_router
-from .slot import router as slot_router
-from .user import router as user_router
+from .activities import router as activity_router
+from .bookings import router as booking_router
+from .slots import router as slot_router
+from .users import router as user_router
