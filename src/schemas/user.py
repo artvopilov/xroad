@@ -1,27 +1,26 @@
-from mongoengine import Document, StringField, IntField, BooleanField, ListField, EmailField
+from mongoengine import Document, StringField, BooleanField, ListField, DateField
 
 
 class User(Document):
     username = StringField(required=True)
     password = StringField(required=True)
     user_type = StringField(required=True, choices=['person', 'business'])
-
-    # common
-    name = StringField(required=True)
     phone = StringField(required=True)
     email = StringField()
     image_url = StringField()
 
     # person
-    middle_name = StringField()
-    last_name = StringField()
-    age = IntField()
-    gender = StringField(choices=['male', 'female'])
-    city = StringField()
-    is_pro = BooleanField()
+    person_first_name = StringField()
+    person_middle_name = StringField()
+    person_last_name = StringField()
+    person_date_of_birth = DateField()
+    person_gender = StringField(choices=['male', 'female'])
+    person_is_pro = BooleanField()
 
     # business
-    description = StringField()
-    address = StringField()
-    document_urls = ListField(StringField(), default=None)
-    certificate_urls = ListField(StringField(), default=None)
+    business_registration_id = StringField()
+    business_name = StringField()
+    business_description = StringField()
+    business_address = StringField()
+    business_certificate_urls = ListField(StringField(), default=None)
+    business_is_verified = BooleanField()

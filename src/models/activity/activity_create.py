@@ -1,12 +1,17 @@
-from typing import Optional
+import datetime
+from typing import Optional, Dict
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ActivityCreate(BaseModel):
     name: str
     description: Optional[str]
+    conditions: Optional[str]
+    schedule = Optional[Dict]
+    period_start = Optional[datetime.date]
+    period_end = Optional[datetime.date]
     x: float
     y: float
-    is_private: bool = Field(default=False)
-    is_active: bool = Field(default=True)
+    is_private: Optional[bool]
+    is_active: Optional[bool]

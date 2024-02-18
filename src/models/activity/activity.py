@@ -1,4 +1,5 @@
-from typing import Optional
+import datetime
+from typing import Optional, Dict
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -12,7 +13,11 @@ class Activity(BaseModel):
     user_id: PydanticObjectId = Field(default_factory=PydanticObjectId)
     name: str
     description: Optional[str]
+    conditions: Optional[str]
+    schedule = Optional[Dict]
+    period_start = Optional[datetime.date]
+    period_end = Optional[datetime.date]
     x: float
     y: float
-    is_private: bool
-    is_active: bool
+    is_private: Optional[bool]
+    is_active: Optional[bool]

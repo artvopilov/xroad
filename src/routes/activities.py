@@ -16,34 +16,36 @@ router = APIRouter(prefix='/activities', tags=['activities'])
 
 @router.post('', response_model=ActivityModel)
 async def create_activity(
-    activity_create_model: ActivityCreateModel,
-    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
+        activity_create_model: ActivityCreateModel,
+        user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
-    if user_schema.user_type != 'business' and not user_schema.is_pro:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not allowed')
+    if user_schema.user_type == 'person' and not user_schema.person_is_pro:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Not allowed for not pro person users')
     activity_create_info = activity_create_model.dict()
     activity_schema = ActivitySchema(**activity_create_info, user_id=user_schema.id).save()
     return activity_schema.to_mongo()
 
 
-@router.get('', response_model=list[ActivityModel])
+@router.get('', response_model=list[ActivityModel], response_model_exclude_unset=True)
 async def get_activities(
-    min_x: int,
-    min_y: int,
-    max_x: int,
-    max_y: int,
-    user_id: str = None,
-    skip: int = 0,
-    limit: int = 10
+        min_x: int = None,
+        min_y: int = None,
+        max_x: int = None,
+        max_y: int = None,
+        user_id: str = None,
+        skip: int = 0,
+        limit: int = 10
 ):
-    activity_schemas = ActivitySchema.objects(x__gte=min_x, y__gte=min_y, x__lte=max_x, y__lte=max_y)
+    activity_schemas = ActivitySchema.objects()
+    if min_x is not None and min_y is not None and max_x is not None and max_y is not None:
+        activity_schemas = activity_schemas(x__gte=min_x, y__gte=min_y, x__lte=max_x, y__lte=max_y)
     if user_id is not None:
         activity_schemas = activity_schemas(user_id=user_id)
     activity_schemas = activity_schemas[skip: limit]
     return list(activity_schemas.as_pymongo())
 
 
-@router.get('/{activity_id}', response_model=ActivityModel)
+@router.get('/{activity_id}', response_model=ActivityModel, response_model_exclude_unset=True)
 async def get_activity(activity_id: str):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
@@ -53,8 +55,8 @@ async def get_activity(activity_id: str):
 
 @router.delete('/{activity_id}', status_code=204)
 async def delete_activity(
-    activity_id: str,
-    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
+        activity_id: str,
+        user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
@@ -64,11 +66,11 @@ async def delete_activity(
     activity_schema.delete()
 
 
-@router.patch('/{activity_id}', response_model=ActivityModel)
+@router.patch('/{activity_id}', response_model=ActivityModel, response_model_exclude_unset=True)
 async def update_activity(
-    activity_id: str,
-    activity_update_model: ActivityUpdateModel,
-    user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
+        activity_id: str,
+        activity_update_model: ActivityUpdateModel,
+        user_schema: Annotated[UserSchema, Depends(RouteDeps.get_current_user)]
 ):
     activity_schema = ActivitySchema.objects(id=activity_id).first()
     if activity_schema is None:
