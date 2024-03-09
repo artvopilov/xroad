@@ -12,6 +12,7 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 mongoengine = "^0.27.0"
 pyyaml = "6.0.1"
+starlette-admin = "^0.13.2"
 
 
 [build-system]
